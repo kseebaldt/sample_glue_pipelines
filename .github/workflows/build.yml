@@ -1,0 +1,23 @@
+name: 'Build'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - gh-actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: amazon/aws-glue-libs:glue_libs_3.0.0_image_01
+      options: --user root
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pip3 install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Run tests
+        run: bin/test

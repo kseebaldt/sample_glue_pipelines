@@ -1,0 +1,4 @@
+#! /bin/sh
+
+poetry run flake8 sample_pipelines
+poetry run pytest
