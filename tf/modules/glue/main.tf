@@ -37,14 +37,14 @@ EOF
 
   inline_policy {
     name   = "policy-8675309"
-    policy = templatefile("${path.module}/crawler_policy.json.tpl", { data_bucket = var.data_bucket })
+    policy = templatefile("${path.module}/policies/crawler_policy.json.tpl", { data_bucket = var.data_bucket })
   }
 }
 
 resource "aws_iam_policy" "glue_policy" {
   name        = "${var.app_prefix}-glue"
   description = "Glue Access Policy"
-  policy = templatefile("${path.module}/policy.json.tpl", { app_prefix = var.app_prefix, role_arn = aws_iam_role.glue_role.arn })
+  policy = templatefile("${path.module}/policies/policy.json.tpl", { app_prefix = var.app_prefix, role_arn = aws_iam_role.glue_role.arn })
 }
 
 resource "aws_iam_role_policy_attachment" "glue_attach" {
@@ -62,4 +62,18 @@ resource "aws_glue_catalog_database" "stage_database" {
       data_lake_principal_identifier = "IAM_ALLOWED_PRINCIPALS"
     }
   }
+}
+
+resource "aws_s3_object" "etl_script" {
+  bucket = var.data_bucket
+  key    = "scripts/etl_job.py"
+  source = "${path.module}/scripts/etl_job.py"
+  etag = filemd5("${path.module}/scripts/etl_job.py")
+}
+
+resource "aws_s3_object" "shell_script" {
+  bucket = var.data_bucket
+  key    = "scripts/shell_job.py"
+  source = "${path.module}/scripts/shell_job.py"
+  etag = filemd5("${path.module}/scripts/shell_job.py")
 }

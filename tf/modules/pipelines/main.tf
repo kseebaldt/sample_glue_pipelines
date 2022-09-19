@@ -16,6 +16,8 @@ module "austin_traffic_pipeline" {
 
   app_prefix = var.app_prefix
   data_bucket = module.buckets.data_bucket
+  etl_script_url = module.glue.etl_script_url
+  shell_script_url = module.glue.shell_script_url
   glue_role = module.glue.glue_role
   glue_crawler_role = module.glue.glue_crawler_role
   stage_database = module.glue.stage_database

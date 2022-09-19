@@ -4,7 +4,7 @@ resource "aws_glue_job" "import_raw_traffic_json" {
 
   command {
     name            = "pythonshell"
-    script_location = "s3://${var.data_bucket}/scripts/shell_job.py"
+    script_location = var.shell_script_url
     python_version  = "3.9"
   }
 
@@ -32,7 +32,7 @@ resource "aws_glue_job" "transform_traffic_raw_to_stage" {
 
   command {
     name            = "glueetl"
-    script_location = "s3://${var.data_bucket}/scripts/etl_job.py"
+    script_location = var.etl_script_url
     python_version  = "3"
   }
 
