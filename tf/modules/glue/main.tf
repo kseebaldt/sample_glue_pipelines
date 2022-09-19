@@ -102,6 +102,18 @@ resource "aws_glue_catalog_database" "stage_database" {
   }
 }
 
+resource "aws_glue_catalog_database" "analytics_database" {
+  name = "${var.app_prefix}-analytics"
+
+  create_table_default_permission {
+    permissions = ["ALL"]
+
+    principal {
+      data_lake_principal_identifier = "IAM_ALLOWED_PRINCIPALS"
+    }
+  }
+}
+
 resource "aws_s3_object" "etl_script" {
   bucket = var.data_bucket
   key    = "scripts/etl_job.py"

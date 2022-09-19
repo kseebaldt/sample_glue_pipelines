@@ -35,3 +35,27 @@ resource "aws_glue_crawler" "stage_traffic_crawler" {
     path = "s3://${var.data_bucket}/stage/sample/austin_traffic"
   }
 }
+
+module "aggregate_incidents" {
+  source = "../../modules/etl_job"
+
+  job_name = "${var.app_prefix}-aggregate-traffic-incidents"
+  glue_role = var.glue_role
+  etl_script_url = var.etl_script_url
+  data_bucket = var.data_bucket
+  wheel_file = var.wheel_file
+  job_function = "aggregate_incidents"
+  job_module = "sample_pipelines.traffic.analytics"
+  path_secret_id = var.path_secret_id
+  secrets_id = var.secrets_id
+}
+
+resource "aws_glue_crawler" "analytics_traffic_crawler" {
+  database_name = "${var.app_prefix}-analytics"
+  name          = "${var.app_prefix}-analytics-traffic-crawler"
+  role          = var.glue_crawler_role.arn
+
+  s3_target {
+    path = "s3://${var.data_bucket}/analytics/sample/austin_traffic"
+  }
+}
