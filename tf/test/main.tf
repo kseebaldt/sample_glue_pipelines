@@ -26,6 +26,14 @@ module "glue" {
   data_bucket = module.buckets.data_bucket
 }
 
+module "deploy" {
+  source = "../modules/deploy"
+
+  app_prefix = "kurtis-test"
+  data_bucket = module.buckets.data_bucket
+  github_repository = "sample_glue_pipelines"
+}
+
 module "pipelines" {
   source = "../pipelines"
 
