@@ -20,7 +20,7 @@
                 "iam:ListRolePolicies",
                 "iam:GetRole",
                 "iam:GetRolePolicy",
-                "cloudwatch:PutMetricData"                
+                "cloudwatch:PutMetricData"        
             ],
             "Resource": [
                 "*"
@@ -50,6 +50,16 @@
                 "arn:aws:s3:::*/*aws-glue-*/*"
             ]
         },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue"
+            ],
+            "Resource": [
+                "${path_secret_arn}",
+                "${secrets_arn}"
+            ]
+        },      
         {
             "Effect": "Allow",
             "Action": [

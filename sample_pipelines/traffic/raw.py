@@ -9,12 +9,12 @@ DATASET_URL = "https://data.austintexas.gov/resource/dx9v-zd7x.csv"
 LIMIT = 10000000
 
 
-def import_csv(secrets):
+def import_csv(paths, secrets):
     now_timestamp = _now()
     s3 = boto3.client("s3")
 
     where = f"traffic_report_status_date_time <= '{now_timestamp}'"
-    last_timestamp = _get_last_timestamp(s3, secrets["raw_path"])
+    last_timestamp = _get_last_timestamp(s3, paths["raw_path"])
     if last_timestamp:
         where = f"{where} and traffic_report_status_date_time > '{last_timestamp}'"
 
@@ -22,7 +22,7 @@ def import_csv(secrets):
         DATASET_URL, params={"$where": where, "$limit": LIMIT}, stream=True
     )
 
-    url = f"{secrets['raw_path']}sample/austin_traffic/load_time={now_timestamp}/data.csv.gz"
+    url = f"{paths['raw_path']}sample/austin_traffic/load_time={now_timestamp}/data.csv.gz"
 
     results = response.iter_lines()
 
@@ -36,7 +36,7 @@ def import_csv(secrets):
     except StopIteration:
         return None
 
-    _write_last_timestamp(s3, secrets["raw_path"], now_timestamp)
+    _write_last_timestamp(s3, paths["raw_path"], now_timestamp)
 
 
 def _get_last_timestamp(s3, base_url):

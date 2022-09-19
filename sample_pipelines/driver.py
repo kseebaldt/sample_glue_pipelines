@@ -29,13 +29,18 @@ def shell_job():
 
 
 def _get_job_function():
-    args = getResolvedOptions(sys.argv, ["job_module", "job_function", "secret_id"])
+    args = getResolvedOptions(
+        sys.argv, ["job_module", "job_function", "path_secret_id", "secrets_id"]
+    )
 
     job_module = import_module(args["job_module"])
     f = getattr(job_module, args["job_function"])
-    return partial(f, secrets(args["secret_id"]))
+    return partial(f, secrets(args["path_secret_id"]), secrets(args["secrets_id"]))
 
 
 def secrets(key: str):
     client = boto3.client("secretsmanager")
-    return json.loads(client.get_secret_value(SecretId=key)["SecretString"])
+    try:
+        return json.loads(client.get_secret_value(SecretId=key)["SecretString"])
+    except client.exceptions.ResourceNotFoundException:
+        return {}

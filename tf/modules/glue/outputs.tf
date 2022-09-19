@@ -17,3 +17,11 @@ output "etl_script_url" {
 output "shell_script_url" {
   value = "s3://${var.data_bucket}/${aws_s3_object.shell_script.id}"
 }
+
+output "path_secret_id" {
+  value = aws_secretsmanager_secret.path_secret.id
+}
+
+output "secrets_id" {
+  value = aws_secretsmanager_secret.secrets.id
+}

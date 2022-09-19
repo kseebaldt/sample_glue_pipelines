@@ -27,52 +27,57 @@ def s3_bucket(bucket_name):
 
 
 @fixture
-def secrets(bucket_name):
+def paths(bucket_name):
     return {"raw_path": f"s3://{bucket_name}/raw/"}
 
 
 @fixture
-def previous_timestamp(bucket_name, secrets):
+def secrets():
+    return {"some_secret": "abc123"}
+
+
+@fixture
+def previous_timestamp(bucket_name, paths):
     previous_timestamp = "2022-09-06T21:30:46.717814"
     s3 = boto3.client("s3")
-    _write_last_timestamp(s3, secrets["raw_path"], previous_timestamp)
+    _write_last_timestamp(s3, paths["raw_path"], previous_timestamp)
     return previous_timestamp
 
 
-def test_queries_all_records(secrets, now, requests_mock):
+def test_queries_all_records(paths, secrets, now, requests_mock):
     requests_mock.get(
         DATASET_URL,
         text="a,b,c",
     )
 
-    import_csv(secrets)
+    import_csv(paths, secrets)
 
     where = f"traffic_report_status_date_time <= '{now.lower()}'"
     assert where in requests_mock.last_request.qs["$where"]
 
 
 def test_queries_records_since_last_timestamp(
-    secrets, requests_mock, now, previous_timestamp
+    paths, secrets, requests_mock, now, previous_timestamp
 ):
     requests_mock.get(
         DATASET_URL,
         text="a,b,c",
     )
 
-    import_csv(secrets)
+    import_csv(paths, secrets)
     where = f"traffic_report_status_date_time <= '{now.lower()}' and traffic_report_status_date_time > '{previous_timestamp.lower()}'"
     assert where in requests_mock.last_request.qs["$where"]
 
 
 def test_writes_nothing_if_only_header_returned(
-    secrets, requests_mock, now, bucket_name
+    paths, secrets, requests_mock, now, bucket_name
 ):
     requests_mock.get(
         DATASET_URL,
         text="a,b,c",
     )
 
-    import_csv(secrets)
+    import_csv(paths, secrets)
 
     s3 = boto3.resource("s3")
 
@@ -81,29 +86,29 @@ def test_writes_nothing_if_only_header_returned(
     assert keys == []
 
 
-def test_writes_csv_file(secrets, requests_mock, now, bucket_name):
+def test_writes_csv_file(paths, secrets, requests_mock, now, bucket_name):
     rows = ["col1,col2\n", "foo,bar\n", "abc,def\n"]
     requests_mock.get(
         DATASET_URL,
         text="".join(rows),
     )
 
-    import_csv(secrets)
+    import_csv(paths, secrets)
 
-    url = f"{secrets['raw_path']}sample/austin_traffic/load_time={now}/data.csv.gz"
+    url = f"{paths['raw_path']}sample/austin_traffic/load_time={now}/data.csv.gz"
 
     lines = list(smart_open.open(url, transport_params={"client": boto3.client("s3")}))
 
     assert lines == rows
 
 
-def test_writes_last_timestamp(secrets, requests_mock, now, bucket_name):
+def test_writes_last_timestamp(paths, secrets, requests_mock, now, bucket_name):
     requests_mock.get(
         DATASET_URL,
         text="col1,col2\nfoo,bar\nabc,def\n",
     )
 
-    import_csv(secrets)
+    import_csv(paths, secrets)
 
     s3 = boto3.resource("s3")
 

@@ -6,17 +6,22 @@ from sample_pipelines.traffic.stage import transform_raw
 
 
 @fixture
-def secrets(tmp_path, data_path):
+def paths(tmp_path, data_path):
     return {
         "raw_path": str(data_path / "raw"),
         "stage_path": str(tmp_path / "stage"),
     }
 
 
-def test_converts_dates(secrets, spark, glueContext):
-    transform_raw(secrets, spark, glueContext)
+@fixture
+def secrets():
+    return {"some_secret": "abc123"}
+
+
+def test_converts_dates(paths, secrets, spark, glueContext):
+    transform_raw(paths, secrets, spark, glueContext)
     df = spark.read.format("parquet").load(
-        f"{secrets['stage_path']}/sample/austin_traffic/"
+        f"{paths['stage_path']}/sample/austin_traffic/"
     )
 
     expected = spark.createDataFrame(
@@ -48,10 +53,10 @@ def test_converts_dates(secrets, spark, glueContext):
     )
 
 
-def test_converts_latitude_longitude(secrets, spark, glueContext):
-    transform_raw(secrets, spark, glueContext)
+def test_converts_latitude_longitude(paths, secrets, spark, glueContext):
+    transform_raw(paths, secrets, spark, glueContext)
     df = spark.read.format("parquet").load(
-        f"{secrets['stage_path']}/sample/austin_traffic/"
+        f"{paths['stage_path']}/sample/austin_traffic/"
     )
 
     expected = spark.createDataFrame(

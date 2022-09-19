@@ -10,7 +10,7 @@ resource "aws_glue_job" "import_raw_traffic_json" {
 
   default_arguments = {
     "--TempDir" = "s3://${var.data_bucket}/tmp/",
-    "--additional-python-modules" = "s3://${var.data_bucket}/dist/sample_pipelines-0.1.0-py3-none-any.whl",
+    "--extra-py-files" = "s3://${var.data_bucket}/dist/sample_pipelines-0.1.0-py3-none-any.whl",
     "--class" = "GlueApp",
     "--enable-continuous-cloudwatch-log" = "true",
     "--enable-glue-datacatalog" = "true",
@@ -20,7 +20,8 @@ resource "aws_glue_job" "import_raw_traffic_json" {
     "--job-language" = "python",
     "--job_function" = "import_csv",
     "--job_module" = "sample_pipelines.traffic.raw",
-    "--secret_id" = "${var.app_prefix}-data-secrets",
+    "--path_secret_id" = var.path_secret_id,
+    "--secrets_id" = var.secrets_id,
     "--spark-event-logs-path" = "s3://${var.data_bucket}/sparkHistoryLogs/"
   }
 }
@@ -48,7 +49,8 @@ resource "aws_glue_job" "transform_traffic_raw_to_stage" {
     "--job-language" = "python",
     "--job_function" = "transform_raw",
     "--job_module" = "sample_pipelines.traffic.stage",
-    "--secret_id" = "${var.app_prefix}-data-secrets",
+    "--path_secret_id" = var.path_secret_id,
+    "--secrets_id" = var.secrets_id,
     "--spark-event-logs-path" = "s3://${var.data_bucket}/sparkHistoryLogs/"
   }
 }

@@ -14,6 +14,14 @@ variable "shell_script_url" {
   type = string
 }
 
+variable "path_secret_id" {
+  type = string
+}
+
+variable "secrets_id" {
+  type = string
+}
+
 variable "glue_role" {
   type = object({
     arn = string

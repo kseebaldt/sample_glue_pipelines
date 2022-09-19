@@ -1,3 +1,24 @@
+locals {
+  path_secret_value = {
+    raw_path = "s3://${var.data_bucket}/raw/"
+    stage_path = "s3://${var.data_bucket}/stage/"
+    analytics_path = "s3://${var.data_bucket}/analytics/"
+  }
+}
+
+resource "aws_secretsmanager_secret" "path_secret" {
+  name = "${var.app_prefix}-glue-paths"
+}
+
+resource "aws_secretsmanager_secret" "secrets" {
+  name = "${var.app_prefix}-glue-secrets"
+}
+
+resource "aws_secretsmanager_secret_version" "path_secret_version" {
+  secret_id     = aws_secretsmanager_secret.path_secret.id
+  secret_string = jsonencode(local.path_secret_value)
+}
+
 resource "aws_iam_role" "glue_role" {
   name        = "${var.app_prefix}-glue"
 
@@ -9,6 +30,13 @@ resource "aws_iam_role" "glue_role" {
       "Action": "sts:AssumeRole",
       "Principal": {
         "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow"
+    },
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "glue.amazonaws.com"
       },
       "Effect": "Allow"
     }
@@ -44,12 +72,22 @@ EOF
 resource "aws_iam_policy" "glue_policy" {
   name        = "${var.app_prefix}-glue"
   description = "Glue Access Policy"
-  policy = templatefile("${path.module}/policies/policy.json.tpl", { app_prefix = var.app_prefix, role_arn = aws_iam_role.glue_role.arn })
+  policy = templatefile("${path.module}/policies/policy.json.tpl", { 
+    app_prefix = var.app_prefix,
+    role_arn = aws_iam_role.glue_role.arn, 
+    path_secret_arn = aws_secretsmanager_secret.path_secret.arn, 
+    secrets_arn = aws_secretsmanager_secret.secrets.arn
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "glue_attach" {
   role       = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "glue_crawler_attach" {
+  role       = aws_iam_role.glue_crawler_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
 }
 
 resource "aws_glue_catalog_database" "stage_database" {

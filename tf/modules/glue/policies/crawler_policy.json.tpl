@@ -8,7 +8,7 @@
                 "s3:PutObject"
             ],
             "Resource": [
-                "arn:aws:s3:::${data_bucket}*"
+                "arn:aws:s3:::${data_bucket}/*"
             ]
         }
     ]
