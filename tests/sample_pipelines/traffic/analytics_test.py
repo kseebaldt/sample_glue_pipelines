@@ -70,4 +70,8 @@ def test_aggregation(paths, secrets, spark, glueContext, input_df):
         ["month", "h3_index", "issue_reported", "count"],
     )
 
-    assert_df_equality(df, expected, ignore_row_order=True)
+    assert_df_equality(
+        df.select("month", "h3_index", "issue_reported", "count"),
+        expected,
+        ignore_row_order=True,
+    )
