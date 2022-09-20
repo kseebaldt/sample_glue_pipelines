@@ -172,14 +172,6 @@ numpy = ["numpy"]
 test = ["flake8", "pylint", "pytest", "pytest-cov"]
 
 [[package]]
-name = "h3-pyspark"
-version = "1.2.6"
-description = "PySpark bindings for H3, a hierarchical hexagonal geospatial indexing system"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[[package]]
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -642,7 +634,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "1c1d44a4290ad9056b4b316b06c34b01c497d7039d1fe621362a4193aaefba26"
+content-hash = "161bd3473a416d47a8466f8e5d1f6b52ee29161fee8fa69b6f904a4fe061f380"
 
 [metadata.files]
 attrs = [
@@ -833,10 +825,6 @@ h3 = [
     {file = "h3-3.7.4-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:62057c1c3d1c7fe492841e42fa360825d66fafd55ac37dc4e90b2292af21cb47"},
     {file = "h3-3.7.4-cp39-cp39-win_amd64.whl", hash = "sha256:25f0c22f4802ab71c45b86d206bd30fa0a6c7fbc3b630398b60c22907e9742e6"},
     {file = "h3-3.7.4.tar.gz", hash = "sha256:f8edf5a546b31afdcd801b60448ea890ce1ff418fb784335e1329519f13aa85e"},
-]
-h3-pyspark = [
-    {file = "h3-pyspark-1.2.6.tar.gz", hash = "sha256:27c6e9513b37cc18be4de5a7b9ebc8216372250ee59f26522f1ab0719f5395fe"},
-    {file = "h3_pyspark-1.2.6-py3-none-any.whl", hash = "sha256:e247713f7006260b2da6039b0a05bb3e109ec24aa482218f08d71011baf4e00d"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
