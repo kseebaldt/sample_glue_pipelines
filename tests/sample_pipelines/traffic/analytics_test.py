@@ -37,6 +37,12 @@ def input_df(spark, paths):
             ),
             (
                 "Incident 1",
+                isoparse("2018-06-24T10:15:36.000Z"),
+                None,
+                None,
+            ),
+            (
+                "Incident 1",
                 isoparse("2018-07-13T10:15:36.000Z"),
                 30.266666,
                 -97.73333,

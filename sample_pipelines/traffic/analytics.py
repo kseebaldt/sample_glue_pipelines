@@ -28,7 +28,8 @@ def aggregate_incidents(paths, secrets, spark, glueContext):
     )
 
     df = (
-        df.withColumn("h3_index", geo_to_h3("latitude", "longitude", F.lit(9)))
+        df.where(F.col("latitude").isNotNull() & F.col("longitude").isNotNull())
+        .withColumn("h3_index", geo_to_h3("latitude", "longitude", F.lit(9)))
         .withColumn(
             "wkt",
             to_wkt("h3_index"),
