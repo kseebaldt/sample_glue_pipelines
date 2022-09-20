@@ -16,7 +16,7 @@ def aggregate_incidents(paths, secrets, spark, glueContext):
             "geojson",
             h3_pyspark.h3_to_geo_boundary(F.col("h3_index"), F.lit(True)),
         )
-        .withColumn("month", F.date_format("published_date", "yyyy-MM"))
+        .withColumn("month", F.trunc("published_date", "MM"))
         .groupBy("month", "h3_index", "issue_reported")
         .agg(F.count("*").alias("count"), F.first("geojson").alias("geojson"))
     )

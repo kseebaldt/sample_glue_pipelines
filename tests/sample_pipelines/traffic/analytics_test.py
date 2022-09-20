@@ -1,5 +1,6 @@
 from chispa.dataframe_comparer import assert_df_equality
 from dateutil.parser import isoparse
+from datetime import date
 from pytest import fixture
 
 from sample_pipelines.traffic.analytics import aggregate_incidents
@@ -63,9 +64,9 @@ def test_aggregation(paths, secrets, spark, glueContext, input_df):
 
     expected = spark.createDataFrame(
         [
-            ("2018-06", "89489e3464fffff", "Incident 1", 2),
-            ("2018-06", "89489e3464fffff", "Incident 2", 1),
-            ("2018-07", "89489e3464fffff", "Incident 1", 1),
+            (date.fromisoformat("2018-06-01"), "89489e3464fffff", "Incident 1", 2),
+            (date.fromisoformat("2018-06-01"), "89489e3464fffff", "Incident 2", 1),
+            (date.fromisoformat("2018-07-01"), "89489e3464fffff", "Incident 1", 1),
         ],
         ["month", "h3_index", "issue_reported", "count"],
     )
